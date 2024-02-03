@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/base/custom_loader.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/auth_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/cart_controller.dart';
+import 'package:flutter_e_commerce_app_with_backend/controller/location_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/user_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
@@ -62,22 +63,49 @@ class AccountPage extends StatelessWidget {
                                 SizedBox(height: Dimensions.height10),
                                 AccountWidget(
                                   bigText: BigText(
-                                      text: usercontroller.getUserModel.phone),
+                                      text: usercontroller.getUserModel!.phone),
                                   icon: Icons.call,
                                   color: Colors.amber,
                                 ),
                                 SizedBox(height: Dimensions.height10),
                                 AccountWidget(
                                   bigText: BigText(
-                                      text: usercontroller.getUserModel.email),
+                                      text: usercontroller.getUserModel!.email),
                                   icon: Icons.mail_outline,
                                   color: Colors.amberAccent,
                                 ),
                                 SizedBox(height: Dimensions.height10),
-                                AccountWidget(
-                                    bigText: const BigText(
-                                        text: "Fill in your Address"),
-                                    icon: Icons.location_on),
+                                GetBuilder<LocationController>(
+                                  builder: (locationController) {
+                                    // check if user already login and addressList is empty do ...
+                                    if (_userLogged &&
+                                        locationController
+                                            .addressList.isEmpty) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.toNamed(
+                                              RouteHelper.getAddAddressPage());
+                                        },
+                                        child: AccountWidget(
+                                            bigText: const BigText(
+                                                text: "Fill in your Address"),
+                                            icon: Icons.location_on),
+                                      );
+                                    } else {
+                                      // and if check user already login and addressList is Not empty do..
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Get.toNamed(
+                                              RouteHelper.getAddAddressPage());
+                                        },
+                                        child: AccountWidget(
+                                            bigText: const BigText(
+                                                text: "Your Address"),
+                                            icon: Icons.location_on),
+                                      );
+                                    }
+                                  },
+                                ),
                                 SizedBox(height: Dimensions.height10),
                                 AccountWidget(
                                   bigText: const BigText(text: "Message"),
@@ -87,6 +115,7 @@ class AccountPage extends StatelessWidget {
                                 //Logout
                                 GestureDetector(
                                   onTap: () {
+                                    // when click logout clear anything
                                     if (Get.find<AuthController>()
                                         .userLoggedIn()) {
                                       Get.find<AuthController>()
@@ -94,6 +123,8 @@ class AccountPage extends StatelessWidget {
                                       Get.find<CartController>().clear();
                                       Get.find<CartController>()
                                           .clearCartHistory();
+                                      Get.find<LocationController>()
+                                          .clearAddressList();
                                       Get.offNamed(RouteHelper.getSignInPage());
                                     }
                                   },

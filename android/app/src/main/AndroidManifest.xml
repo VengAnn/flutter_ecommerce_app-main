@@ -1,8 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--Add Permission google maps-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/> 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>   
+
     <application
         android:label="flutter_e_commerce_app_with_backend"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!--add this for google maps -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyAJj0HqvT8Djmv2OCOOMICkCAeTPgr5pLY"/>
+        <!---->    
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

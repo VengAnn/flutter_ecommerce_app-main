@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/base/no_data_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/auth_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/cart_controller.dart';
+import 'package:flutter_e_commerce_app_with_backend/controller/location_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/popular_product_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/recommended_product_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
@@ -313,7 +314,18 @@ class _CartPageState extends State<CartPage> {
                             //check user has loggedIn or not
                             if (Get.find<AuthController>().userLoggedIn()) {
                               //print("taped on checkout");
-                              cartController.addToHistory();
+                              //cartController.addToHistory();
+
+                              print("taped cart checkout");
+                              // check if addressList is Empty or null we go to screen set address
+                              if (Get.find<LocationController>()
+                                  .addressList
+                                  .isEmpty) {
+                                Get.toNamed(RouteHelper.getAddAddressPage());
+                              } else {
+                                // but when addressList already has when click checkOut we go to homePage
+                                Get.offNamed(RouteHelper.getInitial());
+                              }
                             } else {
                               Get.toNamed(RouteHelper.getSignInPage());
                             }

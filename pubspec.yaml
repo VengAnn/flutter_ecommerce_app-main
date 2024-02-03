@@ -41,6 +41,11 @@ dependencies:
   shared_preferences: ^2.2.2 #for store data in local Storage
   intl: ^0.19.0 #for format DateTime and something else ....
 
+  google_maps_flutter: ^2.5.3
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
+  http: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

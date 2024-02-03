@@ -1,3 +1,4 @@
+import 'package:flutter_e_commerce_app_with_backend/pages/address/address_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/auth/sign_in_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/cart_page/cart_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/food/popular_food_detail.dart';
@@ -15,6 +16,8 @@ class RouteHelper {
   static const String cartPage = "/cart-page";
   static const String signIn = "/sign-in";
 
+  static const String addAddress = "/add-address";
+
   static String getSplashPage() => "$splashPage";
   static String getInitial() => "$initial";
   static String getPopularFood(int pageId, String page) =>
@@ -24,10 +27,16 @@ class RouteHelper {
   static String getCartPage() => "${cartPage}";
   static String getSignInPage() => "$signIn";
 
+  static String getAddAddressPage() => "${addAddress}";
+
   static List<GetPage> routes = [
     GetPage(name: splashPage, page: () => const SplashScreen()),
     //route MainFood
-    GetPage(name: initial, page: () => const HomePage()),
+    GetPage(
+      name: initial,
+      page: () => const HomePage(),
+      transition: Transition.fade,
+    ),
     //sign In
     GetPage(
         name: signIn,
@@ -69,6 +78,14 @@ class RouteHelper {
         return const CartPage();
       },
       transition: Transition.fadeIn,
+    ),
+
+    // AddAddressPage
+    GetPage(
+      name: addAddress,
+      page: () {
+        return const AddAddressPage();
+      },
     ),
   ];
 }
