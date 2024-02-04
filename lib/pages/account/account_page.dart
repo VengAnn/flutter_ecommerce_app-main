@@ -10,8 +10,25 @@ import 'package:flutter_e_commerce_app_with_backend/widgets/account_widget.dart'
 import 'package:flutter_e_commerce_app_with_backend/widgets/big_text.dart';
 import 'package:get/get.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
+
+  @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  @override
+  void initState() {
+    super.initState();
+    bool _userLogged = Get.find<AuthController>().userLoggedIn();
+    if (_userLogged) {
+      // if already logined
+      // when open this page we call get AddressList from the server db back end
+      // to load the address save in the server
+      Get.find<LocationController>().getAddressList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

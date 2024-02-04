@@ -172,7 +172,7 @@ class LocationController extends GetxController implements GetxService {
       await getAddressList();
       String message = response.body["message"];
       responseModel = ResponseModel(true, message);
-      // saveUserAddress to local storage s
+      // saveUserAddress to local storage
       await saveUserAddress(addressModel);
     } else {
       debugPrint("couldn't save the address");
@@ -186,6 +186,7 @@ class LocationController extends GetxController implements GetxService {
     Response response = await locationRepo.getAllAddress();
 
     if (response.statusCode == 200) {
+      debugPrint("get AddressList success");
       _addressList = [];
       _allAddressList = [];
       response.body.forEach((address) {
@@ -193,6 +194,7 @@ class LocationController extends GetxController implements GetxService {
         _allAddressList.add(AddressModel.fromJson(address));
       });
     } else {
+      debugPrint("couldn't get AddressList");
       _addressList = [];
       _allAddressList = [];
     }
