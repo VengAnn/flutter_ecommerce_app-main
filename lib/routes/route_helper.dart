@@ -1,10 +1,10 @@
 import 'package:flutter_e_commerce_app_with_backend/pages/address/address_page.dart';
+import 'package:flutter_e_commerce_app_with_backend/pages/address/pick_address_map.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/auth/sign_in_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/cart_page/cart_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/food/popular_food_detail.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/food/recommended_food_detail.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/home/home_page.dart';
-import 'package:flutter_e_commerce_app_with_backend/pages/home/main_food_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/splash/splash_page.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +17,7 @@ class RouteHelper {
   static const String signIn = "/sign-in";
 
   static const String addAddress = "/add-address";
+  static const String pickAddressMap = "/pick-address";
 
   static String getSplashPage() => "$splashPage";
   static String getInitial() => "$initial";
@@ -28,8 +29,16 @@ class RouteHelper {
   static String getSignInPage() => "$signIn";
 
   static String getAddAddressPage() => "${addAddress}";
+  static String getPickAddressPage() => "$pickAddressMap";
 
   static List<GetPage> routes = [
+    GetPage(
+        name: pickAddressMap,
+        page: () {
+          PickAddressMap _pickAddressMap = Get.arguments;
+
+          return _pickAddressMap;
+        }),
     GetPage(name: splashPage, page: () => const SplashScreen()),
     //route MainFood
     GetPage(

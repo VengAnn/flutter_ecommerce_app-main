@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/app_constant.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //In this we not using http or dio we using Response biuld in Getx package

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/account/account_page.dart';
-import 'package:flutter_e_commerce_app_with_backend/pages/auth/sign_in_page.dart';
-import 'package:flutter_e_commerce_app_with_backend/pages/auth/sign_up_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/cart_page/cart_history.dart';
 import 'package:flutter_e_commerce_app_with_backend/pages/home/main_food_page.dart';
 
@@ -16,9 +14,10 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   List page = [
     const MainFoodPage(),
+    // ignore: avoid_unnecessary_containers
     Container(child: const Text("Histrory Page")),
-    CartHistory(),
-    AccountPage(),
+    const CartHistory(),
+    const AccountPage(),
   ];
   @override
   Widget build(BuildContext context) {

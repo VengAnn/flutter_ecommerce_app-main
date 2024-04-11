@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/data/repository/location_repo.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/address_model.dart';
@@ -48,6 +49,23 @@ class LocationController extends GetxController implements GetxService {
   Position get position => _position;
   Position get pickPosition => _pickPosition;
 
+  /*
+    for service
+   */
+  // ignore: prefer_final_fields
+  bool _isLoadingService = false;
+  bool get isLoadingSv => _isLoadingService;
+  /*
+    whether the user is in service zone or not
+   */
+  bool _inZone = true;
+  bool get inZOne => _inZone;
+  /*
+    showing and hiding the button as the map loads
+  */
+  bool _buttonDisabled = false;
+  bool get buttonDisabled => _buttonDisabled;
+
   void setMapController(GoogleMapController mapController) {
     _mapController = mapController;
   }
@@ -55,6 +73,7 @@ class LocationController extends GetxController implements GetxService {
   void updatePosition(CameraPosition position, bool fromAddress) async {
     if (_updateAddressData) {
       _isLoading = true;
+      update();
       try {
         if (fromAddress) {
           _position = Position(
@@ -84,6 +103,14 @@ class LocationController extends GetxController implements GetxService {
           );
         }
 
+        ResponseModel _responseModel = await getZone(
+            position.target.latitude.toString(),
+            position.target.longitude.toString(),
+            false);
+        /*
+        if button value is false we are in the service area
+        */
+        _buttonDisabled = !_responseModel.isSuccess;
         // changeAddress talk to the server
         if (_changeAddress) {
           String _address = await getAddressFromGeocode(
@@ -98,11 +125,15 @@ class LocationController extends GetxController implements GetxService {
                   name: _address,
                 )
               : _pickPlacemark = Placemark(name: _address);
-          update();
         }
       } catch (e) {
-        print(e);
+        log(e.toString());
       }
+
+      _isLoading = false;
+      update();
+    } else {
+      _updateAddressData = true;
     }
   }
 
@@ -126,13 +157,13 @@ class LocationController extends GetxController implements GetxService {
           String displayName = data['display_name'];
 
           _address = displayName;
-          print('Display Name: $displayName');
+          debugPrint('Display Name: $displayName');
         } else {
-          print('Error: Display name not found in response');
+          debugPrint('Error: Display name not found in response');
         }
       }
     } else {
-      print("Error with the apiMap get the location!!");
+      debugPrint("Error with the apiMap get the location!!");
     }
     update();
     return _address;
@@ -142,19 +173,21 @@ class LocationController extends GetxController implements GetxService {
   Map get getAddress => _getAddress;
 
   AddressModel getUserAddress() {
-    late AddressModel _addressModel;
-    /*
-      we need convert this string locationRepo.getUserAddress() to map by jsonDecode
-    */
-    _getAddress = jsonDecode(locationRepo.getUserAddress());
-    try {
-      _addressModel =
-          AddressModel.fromJson(jsonDecode(locationRepo.getUserAddress()));
-    } catch (e) {
-      debugPrint(e.toString());
+    AddressModel? _addressModel;
+    String userAddressJson = locationRepo.getUserAddress();
+
+    if (userAddressJson.isNotEmpty) {
+      try {
+        _getAddress = jsonDecode(userAddressJson);
+        _addressModel = AddressModel.fromJson(_getAddress);
+      } catch (e) {
+        log(e.toString());
+      }
+    } else {
+      log('User address JSON is empty');
     }
 
-    return _addressModel;
+    return _addressModel!;
   }
 
   void setAddressTypeIndex(int index) {
@@ -212,5 +245,55 @@ class LocationController extends GetxController implements GetxService {
     _addressList = [];
     _allAddressList = [];
     update();
+  }
+
+  String getUserAddressFromLocalStorage() {
+    return locationRepo.getUserAddress();
+  }
+
+  void setAddressData() {
+    _position = _pickPosition;
+    _placemark = _pickPlacemark;
+    _updateAddressData = false;
+    update();
+  }
+
+  Future<ResponseModel> getZone(String lat, String lng, bool markerLoad) async {
+    late ResponseModel _responseModel;
+    if (markerLoad) {
+      _isLoading = true;
+    } else {
+      _isLoadingService = true;
+    }
+    update();
+    // await Future.delayed(const Duration(seconds: 2), () {
+    //   _responseModel = ResponseModel(true, "success");
+    //   if (markerLoad) {
+    //     _isLoading = false;
+    //   } else {
+    //     _isLoadingSv = false;
+    //   }
+    //   _inZone = true;
+    // });
+
+    Response response = await locationRepo.getZone(lat, lng);
+    if (response.statusCode == 200) {
+      _inZone = true;
+      _responseModel = ResponseModel(true, response.body["zone_id"].toString());
+    } else {
+      _inZone = false;
+      _responseModel = ResponseModel(true, response.statusText!);
+    }
+    // for debugging
+    log("zone response code is: ${response.statusCode.toString()}"); // 200 //404 // 500 // 403
+
+    if (markerLoad) {
+      _isLoading = false;
+    } else {
+      _isLoadingService = false;
+    }
+    update();
+
+    return _responseModel;
   }
 }

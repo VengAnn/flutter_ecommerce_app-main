@@ -22,6 +22,9 @@ class AppConstants {
   static const String ADD_USER_ADDRESS = "/api/v1/customer/address/add";
   static const String ADDRESS_LIST_URI = "/api/v1/customer/address/list";
 
+  static const String GEOCODE_URI = '/api/v1/config/geocode-api';
+  static const String ZONE_URI = '/api/v1/config/get-zone-id';
+
   static const String TOKEN = "";
   static const String PASSWORD = "";
   static const String PHONE = "";

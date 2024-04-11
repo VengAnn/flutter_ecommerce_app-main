@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/auth_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/location_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/user_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/address_model.dart';
+import 'package:flutter_e_commerce_app_with_backend/pages/address/pick_address_map.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/app_colors.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
@@ -27,7 +30,9 @@ class _AddAddressPageState extends State<AddAddressPage> {
   // initialized location you want with langlng()
   CameraPosition _cameraPosition = const CameraPosition(
       target: LatLng(21.56453682228907, 105.8214412871613), zoom: 17);
-  late LatLng _initialPosition = LatLng(21.56453682228907, 105.8214412871613);
+  late LatLng _initialPosition =
+      const LatLng(21.56453682228907, 105.8214412871613);
+
   @override
   void initState() {
     super.initState();
@@ -40,17 +45,29 @@ class _AddAddressPageState extends State<AddAddressPage> {
     }
 
     if (Get.find<LocationController>().addressList.isNotEmpty) {
+      /**
+       bug fix if first device address it'll empty will need to get if local storage is empty 
+       */
+      if (Get.find<LocationController>().getUserAddressFromLocalStorage() ==
+          "") {
+        Get.find<LocationController>()
+            .saveUserAddress(Get.find<LocationController>().addressList.last);
+      }
       Get.find<LocationController>().getUserAddress();
       _cameraPosition = CameraPosition(
         target: LatLng(
           Get.find<LocationController>().getAddress['latitude'],
           Get.find<LocationController>().getAddress['longitude'],
+          // double.parse(Get.find<LocationController>().getAddress['latitude']),
+          // double.parse(Get.find<LocationController>().getAddress['longitude']),
         ),
       );
 
       _initialPosition = LatLng(
         Get.find<LocationController>().getAddress['latitude'],
         Get.find<LocationController>().getAddress['longitude'],
+        // double.parse(Get.find<LocationController>().getAddress['latitude']),
+        // double.parse(Get.find<LocationController>().getAddress['longitude']),
       );
     }
   }
@@ -79,10 +96,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
           return GetBuilder<LocationController>(
             builder: (locationController) {
               _addressController.text =
-                  '${locationController.placemark.name ?? ''}';
+                  // ignore: unnecessary_string_interpolations
+                  "${locationController.placemark.name ?? ''}";
               '${locationController.placemark.locality ?? ''}'
                   '${locationController.placemark.country ?? ''}';
-              print("address in my view is: ${_addressController.text}");
+              log("address in my view is: ${_addressController.text}");
               return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +125,17 @@ class _AddAddressPageState extends State<AddAddressPage> {
                           GoogleMap(
                             initialCameraPosition: CameraPosition(
                                 target: _initialPosition, zoom: 17),
+                            onTap: (latlng) {
+                              Get.toNamed(
+                                RouteHelper.getPickAddressPage(),
+                                arguments: PickAddressMap(
+                                  fromSignup: false,
+                                  fromAddress: true,
+                                  googleMapController:
+                                      locationController.mapController,
+                                ),
+                              );
+                            },
                             zoomControlsEnabled: false,
                             compassEnabled: false,
                             indoorViewEnabled: true,
@@ -119,7 +148,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
                             },
                             onCameraMove: (position) {
                               // Print dynamic LatLng when the camera moves
-                              print("Dynamic LatLng: ${position.target}");
+                              debugPrint("Dynamic LatLng: ${position.target}");
                               _cameraPosition = position;
                             },
                             onMapCreated: (GoogleMapController controller) {

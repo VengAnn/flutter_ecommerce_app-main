@@ -3,7 +3,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/popular_product_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/recommended_product_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/product_model.dart';
-import 'package:flutter_e_commerce_app_with_backend/pages/food/popular_food_detail.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/app_constant.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
@@ -80,6 +79,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
         children: [
           // ignore: sized_box_for_whitespace
           GetBuilder<PopularProductController>(builder: (popularProducts) {
+            // ignore: sized_box_for_whitespace
             return Container(
               height: Dimensions.parentCarouselContainer, // height: 350,
               // color: Colors.amber,
@@ -328,6 +328,7 @@ class _FoodPageBodyState extends State<FoodPageBody> {
                                           ),
                                           SizedBox(height: Dimensions.height5),
                                           //
+                                          // ignore: sized_box_for_whitespace
                                           Container(
                                             width: Dimensions.screenWidth * 0.7,
                                             // height: 18,

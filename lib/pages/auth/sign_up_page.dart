@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/base/custom_loader.dart';
 import 'package:flutter_e_commerce_app_with_backend/base/show_custom_snack_bar.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/auth_controller.dart';
-import 'package:flutter_e_commerce_app_with_backend/models/response_model.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/sign_up_body_model.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
@@ -71,6 +70,7 @@ class SignUpPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<AuthController>(
+        // ignore: no_leading_underscores_for_local_identifiers
         builder: (_authController) {
           return _authController.isLoading
               ? const CustomLoader()
@@ -78,6 +78,7 @@ class SignUpPage extends StatelessWidget {
                   child: Column(
                     children: [
                       SizedBox(height: Dimensions.height20 * 2.5),
+                      // ignore: avoid_unnecessary_containers
                       Container(
                         child: Center(
                           child: CircleAvatar(

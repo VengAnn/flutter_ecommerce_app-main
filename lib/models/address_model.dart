@@ -8,18 +8,18 @@ class AddressModel {
   late dynamic _longitude;
 
   AddressModel({
-    id,
-    required addressType,
-    contactPersonName,
-    contactPersonNumber,
-    address,
-    latitude,
-    longitude,
+    int? id,
+    required String addressType,
+    String? contactPersonName,
+    String? contactPersonNumber,
+    required String address,
+    dynamic latitude,
+    dynamic longitude,
   }) {
     _id = id;
     _addressType = addressType;
-    _contactPersonName = contactPersonName;
-    _contactPersonNumber = contactPersonNumber;
+    _contactPersonName = contactPersonName ?? '';
+    _contactPersonNumber = contactPersonNumber ?? '';
     _address = address;
     _latitude = latitude;
     _longitude = longitude;
@@ -27,16 +27,16 @@ class AddressModel {
 
   String get address => _address;
   String get addressType => _addressType;
-  String? get contactPersonName => _contactPersonName;
-  String? get contactPersonNumber => _contactPersonNumber;
+  String get contactPersonName => _contactPersonName;
+  String get contactPersonNumber => _contactPersonNumber;
 
   // from json to obj
   AddressModel.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
-    _address = json["address_type"] ?? "";
+    _addressType = json["address_type"] ?? "";
     _contactPersonNumber = json["contact_person_number"] ?? "";
     _contactPersonName = json["contact_person_name"] ?? "";
-    _address = json['address'];
+    _address = json['address'] ?? '';
     _latitude = json['latitude'];
     _longitude = json['longitude'];
   }

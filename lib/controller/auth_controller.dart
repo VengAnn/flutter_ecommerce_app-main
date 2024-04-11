@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/data/repository/auth_repo.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/response_model.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/sign_up_body_model.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController implements GetxService {
   final AuthRepo authRepo;

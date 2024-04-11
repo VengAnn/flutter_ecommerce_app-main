@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/popular_product_controller.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/recommended_product_controller.dart';
-import 'package:flutter_e_commerce_app_with_backend/pages/cart_page/cart_page.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
 import 'package:flutter_e_commerce_app_with_backend/widgets/app_icon.dart';
