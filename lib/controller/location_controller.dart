@@ -179,6 +179,9 @@ class LocationController extends GetxController implements GetxService {
     if (userAddressJson.isNotEmpty) {
       try {
         _getAddress = jsonDecode(userAddressJson);
+        // Parse latitude and longitude as doubles
+        _getAddress['latitude'] = double.parse(_getAddress['latitude']);
+        _getAddress['longitude'] = double.parse(_getAddress['longitude']);
         _addressModel = AddressModel.fromJson(_getAddress);
       } catch (e) {
         log(e.toString());
