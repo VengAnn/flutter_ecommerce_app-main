@@ -29,6 +29,8 @@ class AddressModel {
   String get addressType => _addressType;
   String get contactPersonName => _contactPersonName;
   String get contactPersonNumber => _contactPersonNumber;
+  dynamic get latitude => _latitude; // Getter for latitude
+  dynamic get longitude => _longitude; // Getter for longitude
 
   // from json to obj
   AddressModel.fromJson(Map<String, dynamic> json) {

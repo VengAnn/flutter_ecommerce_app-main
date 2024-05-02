@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_e_commerce_app_with_backend/data/api/api_checker.dart';
 import 'package:flutter_e_commerce_app_with_backend/data/repository/location_repo.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/address_model.dart';
+import 'package:flutter_e_commerce_app_with_backend/models/model_address_suggest/place_detail_response.dart';
+import 'package:flutter_e_commerce_app_with_backend/models/model_address_suggest/prediction_model.dart';
 import 'package:flutter_e_commerce_app_with_backend/models/response_model.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,8 +20,8 @@ class LocationController extends GetxController implements GetxService {
   });
 
   bool _isLoading = false;
-  late Position _position;
-  late Position _pickPosition;
+  Position? _position;
+  Position? _pickPosition;
   Placemark _placemark = Placemark();
   Placemark _pickPlacemark = Placemark();
 
@@ -46,8 +49,8 @@ class LocationController extends GetxController implements GetxService {
 
   // for get
   bool get isLoading => _isLoading;
-  Position get position => _position;
-  Position get pickPosition => _pickPosition;
+  Position? get position => _position;
+  Position? get pickPosition => _pickPosition;
 
   /*
     for service
@@ -66,75 +69,78 @@ class LocationController extends GetxController implements GetxService {
   bool _buttonDisabled = false;
   bool get buttonDisabled => _buttonDisabled;
 
+  /*
+   * save the google map suggestions for address name respone
+   */
+  List<PredictionModel> _predictionList = [];
+
   void setMapController(GoogleMapController mapController) {
     _mapController = mapController;
   }
 
   void updatePosition(CameraPosition position, bool fromAddress) async {
-    if (_updateAddressData) {
-      _isLoading = true;
-      update();
-      try {
-        if (fromAddress) {
-          _position = Position(
-            longitude: position.target.longitude,
-            latitude: position.target.latitude,
-            timestamp: DateTime.now(),
-            heading: 1,
-            accuracy: 1,
-            altitude: 1,
-            speed: 1,
-            speedAccuracy: 1,
-            altitudeAccuracy: 1,
-            headingAccuracy: 1,
-          );
-        } else {
-          _pickPosition = Position(
-            longitude: position.target.longitude,
-            latitude: position.target.latitude,
-            timestamp: DateTime.now(),
-            heading: 1,
-            accuracy: 1,
-            altitude: 1,
-            speed: 1,
-            speedAccuracy: 1,
-            altitudeAccuracy: 1,
-            headingAccuracy: 1,
-          );
-        }
+    log("Dynamic con: ${position.target}");
+    _isLoading = true;
+    update();
 
-        ResponseModel _responseModel = await getZone(
-            position.target.latitude.toString(),
-            position.target.longitude.toString(),
-            false);
-        /*
-        if button value is false we are in the service area
-        */
-        _buttonDisabled = !_responseModel.isSuccess;
-        // changeAddress talk to the server
-        if (_changeAddress) {
-          String _address = await getAddressFromGeocode(
-            LatLng(
-              position.target.latitude,
-              position.target.longitude,
-            ),
-          );
-          //fromAddress is true pass _address to it
-          fromAddress
-              ? _placemark = Placemark(
-                  name: _address,
-                )
-              : _pickPlacemark = Placemark(name: _address);
-        }
-      } catch (e) {
-        log(e.toString());
+    try {
+      if (fromAddress) {
+        _position = Position(
+          longitude: position.target.longitude,
+          latitude: position.target.latitude,
+          timestamp: DateTime.now(),
+          heading: 1,
+          accuracy: 1,
+          altitude: 1,
+          speed: 1,
+          speedAccuracy: 1,
+          altitudeAccuracy: 1,
+          headingAccuracy: 1,
+        );
+      } else {
+        _pickPosition = Position(
+          longitude: position.target.longitude,
+          latitude: position.target.latitude,
+          timestamp: DateTime.now(),
+          heading: 1,
+          accuracy: 1,
+          altitude: 1,
+          speed: 1,
+          speedAccuracy: 1,
+          altitudeAccuracy: 1,
+          headingAccuracy: 1,
+        );
       }
 
-      _isLoading = false;
-      update();
-    } else {
-      _updateAddressData = true;
+      ResponseModel _responseModel = await getZone(
+        position.target.latitude.toString(),
+        position.target.longitude.toString(),
+        false,
+      );
+
+      _buttonDisabled = !_responseModel.isSuccess;
+
+      if (_changeAddress) {
+        String _address = await getAddressFromGeocode(
+          LatLng(
+            position.target.latitude,
+            position.target.longitude,
+          ),
+        );
+
+        fromAddress
+            ? _placemark = Placemark(name: _address)
+            : _pickPlacemark = Placemark(name: _address);
+      } else {
+        _changeAddress = true;
+      }
+    } catch (e) {
+      log(e.toString());
     }
+
+    _isLoading = false;
+    _updateAddressData = true; // Set it to true here
+    update();
   }
 
   Future<String> getAddressFromGeocode(LatLng latLng) async {
@@ -170,18 +176,14 @@ class LocationController extends GetxController implements GetxService {
   }
 
   late Map<String, dynamic> _getAddress;
-  Map get getAddress => _getAddress;
+  Map<String, dynamic> get getAddress => _getAddress;
 
   AddressModel getUserAddress() {
     AddressModel? _addressModel;
     String userAddressJson = locationRepo.getUserAddress();
-
     if (userAddressJson.isNotEmpty) {
       try {
         _getAddress = jsonDecode(userAddressJson);
-        // Parse latitude and longitude as doubles
-        _getAddress['latitude'] = double.parse(_getAddress['latitude']);
-        _getAddress['longitude'] = double.parse(_getAddress['longitude']);
         _addressModel = AddressModel.fromJson(_getAddress);
       } catch (e) {
         log(e.toString());
@@ -299,4 +301,59 @@ class LocationController extends GetxController implements GetxService {
 
     return _responseModel;
   }
+
+  Future<List<PredictionModel>> searchLocation(
+      BuildContext context, String? text) async {
+    if (text!.isNotEmpty) {
+      Response response = await locationRepo.searchLocation(text);
+      if (response.statusCode == 200) {
+        _predictionList = [];
+        response.body['predictions'].forEach((prediction) {
+          // convert json to obj then pass it to list
+          _predictionList.add(PredictionModel.fromJson(prediction));
+        });
+      } else {
+        ApiChecker.checkApi(response);
+      }
+    }
+    return _predictionList;
+  }
+
+  // setLocation(
+  //     String placeID, String address, GoogleMapController mapController) async {
+  //   _isLoading = true;
+  //   update();
+  //   PlaceDetailResponse detail;
+  //   Response response = await locationRepo.setLoaction(placeID);
+  //   detail = PlaceDetailResponse.fromJson(response.body['placeDetails']);
+
+  //   // Extract latitude and longitude from the "coordinates" array
+  //   double latitude = detail.geometry['coordinates'][1];
+  //   double longitude = detail.geometry['coordinates'][0];
+  //   _pickPosition = Position(
+  //     latitude: latitude,
+  //     longitude: longitude,
+  //     timestamp: DateTime.now(),
+  //     accuracy: 1,
+  //     altitude: 1,
+  //     heading: 1,
+  //     speed: 1,
+  //     speedAccuracy: 1,
+  //     altitudeAccuracy: 1,
+  //     headingAccuracy: 1,
+  //   );
+  //   _pickPlacemark = Placemark(name: address);
+  //   _changeAddress = false;
+  //   // ignore: deprecated_member_use
+  //   // if (!mapController.isNull) {
+  //   //   mapController.animateCamera(CameraUpdate.newCameraPosition(
+  //   //     CameraPosition(
+  //   //       target: LatLng(latitude, longitude),
+  //   //       zoom: 18.0,
+  //   //     ),
+  //   //   ));
+  //   // }
+  //   _isLoading = false;
+  //   update();
+  // }
 }

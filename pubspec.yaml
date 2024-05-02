@@ -45,6 +45,11 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   http: ^1.2.0
+  # for suggest recommand ...
+  flutter_typeahead: ^4.3.7
+  google_maps_flutter_web: ^0.5.4+3
+  # Google AutoComplete TextField Widget code 
+  google_places_flutter: ^2.0.8
 
 dev_dependencies:
   flutter_test:

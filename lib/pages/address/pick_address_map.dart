@@ -140,7 +140,7 @@ class _PickAddressMapState extends State<PickAddressMap> {
                                 ? null
                                 : () {
                                     if (locationController
-                                                .pickPosition.latitude !=
+                                                .pickPosition!.latitude !=
                                             0 &&
                                         locationController.pickPlacemark.name !=
                                             null) {
@@ -154,10 +154,10 @@ class _PickAddressMapState extends State<PickAddressMap> {
                                                 CameraPosition(
                                                     target: LatLng(
                                                         locationController
-                                                            .pickPosition
+                                                            .pickPosition!
                                                             .latitude,
                                                         locationController
-                                                            .pickPosition
+                                                            .pickPosition!
                                                             .longitude))),
                                           );
                                           locationController.setAddressData();

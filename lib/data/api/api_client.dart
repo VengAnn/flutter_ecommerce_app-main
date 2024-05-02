@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/app_constant.dart';
 import 'package:get/get.dart';
@@ -37,6 +39,7 @@ class ApiClient extends GetConnect implements GetxService {
         uri,
         headers: headers ?? _mainHeaders,
       );
+      log("response: ${response.body.toString()}");
       return response;
     } catch (e) {
       return Response(statusCode: 1, statusText: "Error ${e.toString()}");

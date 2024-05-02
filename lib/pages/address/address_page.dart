@@ -54,20 +54,38 @@ class _AddAddressPageState extends State<AddAddressPage> {
             .saveUserAddress(Get.find<LocationController>().addressList.last);
       }
       Get.find<LocationController>().getUserAddress();
+      final double latitude;
+      final double longitude;
+      if (Get.find<LocationController>().position == null) {
+        // if null get from local storage
+        latitude =
+            Get.find<LocationController>().getAddress['latitude'] is String
+                ? double.parse(
+                    Get.find<LocationController>().getAddress['latitude'],
+                  )
+                : Get.find<LocationController>().getAddress['latitude'];
+        longitude =
+            Get.find<LocationController>().getAddress['longitude'] is String
+                ? double.parse(
+                    Get.find<LocationController>().getAddress['longitude'],
+                  )
+                : Get.find<LocationController>().getAddress['longitude'];
+      } else {
+        latitude = Get.find<LocationController>().position!.latitude;
+        longitude = Get.find<LocationController>().position!.longitude;
+      }
       _cameraPosition = CameraPosition(
         target: LatLng(
-          Get.find<LocationController>().getAddress['latitude'],
-          Get.find<LocationController>().getAddress['longitude'],
-          // double.parse(Get.find<LocationController>().getAddress['latitude']),
-          // double.parse(Get.find<LocationController>().getAddress['longitude']),
+          // Get.find<LocationController>().getAddress['latitude'],
+          // Get.find<LocationController>().getAddress['longitude'],
+          latitude,
+          longitude,
         ),
       );
 
       _initialPosition = LatLng(
-        Get.find<LocationController>().getAddress['latitude'],
-        Get.find<LocationController>().getAddress['longitude'],
-        // double.parse(Get.find<LocationController>().getAddress['latitude']),
-        // double.parse(Get.find<LocationController>().getAddress['longitude']),
+        latitude,
+        longitude,
       );
     }
   }
@@ -274,8 +292,8 @@ class _AddAddressPageState extends State<AddAddressPage> {
                     contactPersonName: _contactPersonName.text,
                     contactPersonNumber: _contactPersonNumber.text,
                     address: _addressController.text,
-                    latitude: localtionController.position.latitude,
-                    longitude: localtionController.position.longitude,
+                    latitude: localtionController.position!.latitude,
+                    longitude: localtionController.position!.longitude,
                   );
                   // save address to our server
                   localtionController
