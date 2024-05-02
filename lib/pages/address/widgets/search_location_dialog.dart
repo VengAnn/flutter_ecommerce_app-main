@@ -27,73 +27,73 @@ class SearchLocationDialog extends StatelessWidget {
         child: SizedBox(
           width: Dimensions.screenWidth,
           // TypeAheadField auto sugest or recommand
-          // child: TypeAheadField(
-          //   textFieldConfiguration: TextFieldConfiguration(
-          //     controller: _controller,
-          //     textInputAction: TextInputAction.search,
-          //     autofocus: true,
-          //     textCapitalization: TextCapitalization.words,
-          //     keyboardType: TextInputType.streetAddress,
-          //     decoration: InputDecoration(
-          //       hintText: "search location",
-          //       border: OutlineInputBorder(
-          //         borderRadius: BorderRadius.circular(10),
-          //         borderSide: const BorderSide(
-          //           style: BorderStyle.none,
-          //           width: 0,
-          //         ),
-          //       ),
-          //       // ignore: deprecated_member_use
-          //       hintStyle: Theme.of(context).textTheme.headline2?.copyWith(
-          //             color: Theme.of(context).disabledColor,
-          //             fontSize: Dimensions.fontSize21,
-          //           ),
-          //     ),
-          //   ),
-          //   onSuggestionSelected: (PredictionModel suggestion) {
-          //     Get.find<LocationController>().setLocation(
-          //       suggestion.placeId.toString(),
-          //       suggestion.displayName,
-          //       mapController,
-          //     );
-          //     // when select suggest close it
-          //     Get.back();
-          //   },
-          //   /**
-          //    * as we type, it gives us suggestion
-          //    */
-          //   suggestionsCallback: (search) async {
-          //     // return await Get.find<LocationController>()
-          //     //     .searchLocation(context, search);
-          //   },
-          //   itemBuilder: (context, PredictionModel suggestion) {
-          //     return Padding(
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: Dimensions.width10,
-          //         vertical: Dimensions.width10 / 2,
-          //       ),
-          //       child: Row(
-          //         children: [
-          //           const Icon(Icons.location_on),
-          //           Expanded(
-          //             child: Text(
-          //               suggestion.displayName,
-          //               maxLines: 1,
-          //               overflow: TextOverflow.ellipsis,
-          //               // ignore: deprecated_member_use
-          //               style: Theme.of(context).textTheme.headline2?.copyWith(
-          //                     color:
-          //                         // ignore: deprecated_member_use
-          //                         Theme.of(context).textTheme.bodyText1?.color,
-          //                     fontSize: Dimensions.fontSize15,
-          //                   ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     );
-          //   },
-          // ),
+          child: TypeAheadField(
+            textFieldConfiguration: TextFieldConfiguration(
+              controller: _controller,
+              textInputAction: TextInputAction.search,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              keyboardType: TextInputType.streetAddress,
+              decoration: InputDecoration(
+                hintText: "search location",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    style: BorderStyle.none,
+                    width: 0,
+                  ),
+                ),
+                // ignore: deprecated_member_use
+                hintStyle: Theme.of(context).textTheme.headline2?.copyWith(
+                      color: Theme.of(context).disabledColor,
+                      fontSize: Dimensions.fontSize21,
+                    ),
+              ),
+            ),
+            onSuggestionSelected: (PredictionModel suggestion) {
+              Get.find<LocationController>().setLocation(
+                suggestion.placeId.toString(),
+                suggestion.displayName,
+                mapController,
+              );
+              // when select suggest close it
+              Get.back();
+            },
+            /**
+             * as we type, it gives us suggestion
+             */
+            suggestionsCallback: (search) async {
+              return await Get.find<LocationController>()
+                  .searchLocation(context, search);
+            },
+            itemBuilder: (context, PredictionModel suggestion) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Dimensions.width10,
+                  vertical: Dimensions.width10 / 2,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on),
+                    Expanded(
+                      child: Text(
+                        suggestion.displayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        // ignore: deprecated_member_use
+                        style: Theme.of(context).textTheme.headline2?.copyWith(
+                              color:
+                                  // ignore: deprecated_member_use
+                                  Theme.of(context).textTheme.bodyText1?.color,
+                              fontSize: Dimensions.fontSize15,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

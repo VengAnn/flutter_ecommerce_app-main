@@ -76,8 +76,6 @@ class _AddAddressPageState extends State<AddAddressPage> {
       }
       _cameraPosition = CameraPosition(
         target: LatLng(
-          // Get.find<LocationController>().getAddress['latitude'],
-          // Get.find<LocationController>().getAddress['longitude'],
           latitude,
           longitude,
         ),

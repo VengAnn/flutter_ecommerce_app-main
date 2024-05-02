@@ -80,67 +80,72 @@ class LocationController extends GetxController implements GetxService {
 
   void updatePosition(CameraPosition position, bool fromAddress) async {
     log("Dynamic con: ${position.target}");
-    _isLoading = true;
-    update();
+    if (_updateAddressData) {
+      _isLoading = true;
+      update();
+      try {
+        if (fromAddress) {
+          _position = Position(
+            longitude: position.target.longitude,
+            latitude: position.target.latitude,
+            timestamp: DateTime.now(),
+            heading: 1,
+            accuracy: 1,
+            altitude: 1,
+            speed: 1,
+            speedAccuracy: 1,
+            altitudeAccuracy: 1,
+            headingAccuracy: 1,
+          );
+        } else {
+          _pickPosition = Position(
+            longitude: position.target.longitude,
+            latitude: position.target.latitude,
+            timestamp: DateTime.now(),
+            heading: 1,
+            accuracy: 1,
+            altitude: 1,
+            speed: 1,
+            speedAccuracy: 1,
+            altitudeAccuracy: 1,
+            headingAccuracy: 1,
+          );
+        }
 
-    try {
-      if (fromAddress) {
-        _position = Position(
-          longitude: position.target.longitude,
-          latitude: position.target.latitude,
-          timestamp: DateTime.now(),
-          heading: 1,
-          accuracy: 1,
-          altitude: 1,
-          speed: 1,
-          speedAccuracy: 1,
-          altitudeAccuracy: 1,
-          headingAccuracy: 1,
-        );
-      } else {
-        _pickPosition = Position(
-          longitude: position.target.longitude,
-          latitude: position.target.latitude,
-          timestamp: DateTime.now(),
-          heading: 1,
-          accuracy: 1,
-          altitude: 1,
-          speed: 1,
-          speedAccuracy: 1,
-          altitudeAccuracy: 1,
-          headingAccuracy: 1,
-        );
+        ResponseModel _responseModel = await getZone(
+            position.target.latitude.toString(),
+            position.target.longitude.toString(),
+            false);
+        /*
+        if button value is false we are in the service area
+        */
+        _buttonDisabled = !_responseModel.isSuccess;
+        // changeAddress talk to the server
+        if (_changeAddress) {
+          String _address = await getAddressFromGeocode(
+            LatLng(
+              position.target.latitude,
+              position.target.longitude,
+            ),
+          );
+          //fromAddress is true pass _address to it
+          fromAddress
+              ? _placemark = Placemark(
+                  name: _address,
+                )
+              : _pickPlacemark = Placemark(name: _address);
+        } else {
+          _changeAddress = true;
+        }
+      } catch (e) {
+        log(e.toString());
       }
 
-      ResponseModel _responseModel = await getZone(
-        position.target.latitude.toString(),
-        position.target.longitude.toString(),
-        false,
-      );
-
-      _buttonDisabled = !_responseModel.isSuccess;
-
-      if (_changeAddress) {
-        String _address = await getAddressFromGeocode(
-          LatLng(
-            position.target.latitude,
-            position.target.longitude,
-          ),
-        );
-
-        fromAddress
-            ? _placemark = Placemark(name: _address)
-            : _pickPlacemark = Placemark(name: _address);
-      } else {
-        _changeAddress = true;
-      }
-    } catch (e) {
-      log(e.toString());
+      _isLoading = false;
+      update();
+    } else {
+      _updateAddressData = true;
     }
-
-    _isLoading = false;
-    _updateAddressData = true; // Set it to true here
-    update();
   }
 
   Future<String> getAddressFromGeocode(LatLng latLng) async {
@@ -319,41 +324,42 @@ class LocationController extends GetxController implements GetxService {
     return _predictionList;
   }
 
-  // setLocation(
-  //     String placeID, String address, GoogleMapController mapController) async {
-  //   _isLoading = true;
-  //   update();
-  //   PlaceDetailResponse detail;
-  //   Response response = await locationRepo.setLoaction(placeID);
-  //   detail = PlaceDetailResponse.fromJson(response.body['placeDetails']);
+  setLocation(
+      String placeID, String address, GoogleMapController mapController) async {
+    _isLoading = true;
+    update();
+    PlaceDetailResponse detail;
+    Response response = await locationRepo.setLoaction(placeID);
+    detail = PlaceDetailResponse.fromJson(response.body['placeDetails']);
 
-  //   // Extract latitude and longitude from the "coordinates" array
-  //   double latitude = detail.geometry['coordinates'][1];
-  //   double longitude = detail.geometry['coordinates'][0];
-  //   _pickPosition = Position(
-  //     latitude: latitude,
-  //     longitude: longitude,
-  //     timestamp: DateTime.now(),
-  //     accuracy: 1,
-  //     altitude: 1,
-  //     heading: 1,
-  //     speed: 1,
-  //     speedAccuracy: 1,
-  //     altitudeAccuracy: 1,
-  //     headingAccuracy: 1,
-  //   );
-  //   _pickPlacemark = Placemark(name: address);
-  //   _changeAddress = false;
-  //   // ignore: deprecated_member_use
-  //   // if (!mapController.isNull) {
-  //   //   mapController.animateCamera(CameraUpdate.newCameraPosition(
-  //   //     CameraPosition(
-  //   //       target: LatLng(latitude, longitude),
-  //   //       zoom: 18.0,
-  //   //     ),
-  //   //   ));
-  //   // }
-  //   _isLoading = false;
-  //   update();
-  // }
+    // Extract latitude and longitude from the "coordinates" array
+    double latitude = detail.geometry['coordinates'][1];
+    double longitude = detail.geometry['coordinates'][0];
+    _pickPosition = Position(
+      latitude: latitude,
+      longitude: longitude,
+      timestamp: DateTime.now(),
+      accuracy: 1,
+      altitude: 1,
+      heading: 1,
+      speed: 1,
+      speedAccuracy: 1,
+      altitudeAccuracy: 1,
+      headingAccuracy: 1,
+    );
+    _pickPlacemark = Placemark(name: address);
+    _changeAddress = false;
+    // ignore: deprecated_member_use
+    if (!mapController.isNull) {
+      log("long and lat $latitude");
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(latitude, longitude),
+          zoom: 18.0,
+        ),
+      ));
+    }
+    _isLoading = false;
+    update();
+  }
 }

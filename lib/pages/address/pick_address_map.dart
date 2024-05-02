@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_e_commerce_app_with_backend/base/custom_button.dart';
 import 'package:flutter_e_commerce_app_with_backend/controller/location_controller.dart';
+import 'package:flutter_e_commerce_app_with_backend/pages/address/widgets/search_location_dialog.dart';
 import 'package:flutter_e_commerce_app_with_backend/routes/route_helper.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/app_colors.dart';
 import 'package:flutter_e_commerce_app_with_backend/utils/dimensions.dart';
@@ -39,11 +40,13 @@ class _PickAddressMapState extends State<PickAddressMap> {
       _cameraPosition = CameraPosition(target: _initialPosition, zoom: 17);
     } else {
       if (Get.find<LocationController>().addressList.isNotEmpty) {
+        final dynamic latitude =
+            Get.find<LocationController>().getAddress['latitude'];
+        final dynamic longitude =
+            Get.find<LocationController>().getAddress['longitude'];
         _initialPosition = LatLng(
-          // double.parse(Get.find<LocationController>().getAddress['latitude']),
-          // double.parse(Get.find<LocationController>().getAddress['longitude']),
-          Get.find<LocationController>().getAddress['latitude'],
-          Get.find<LocationController>().getAddress['longitude'],
+          latitude is String ? double.parse(latitude) : latitude,
+          longitude is String ? double.parse(longitude) : longitude,
         );
         _cameraPosition = CameraPosition(target: _initialPosition, zoom: 17);
       }
@@ -71,6 +74,10 @@ class _PickAddressMapState extends State<PickAddressMap> {
                       Get.find<LocationController>()
                           .updatePosition(_cameraPosition, false);
                     },
+                    onMapCreated: (GoogleMapController mapController) {
+                      _mapController = mapController;
+                      if (!widget.fromAddress) {}
+                    },
                   ),
                   //picker on map
                   Center(
@@ -82,41 +89,54 @@ class _PickAddressMapState extends State<PickAddressMap> {
                           )
                         : const CircularProgressIndicator(),
                   ),
-                  //
+                  // showing and selecting address
                   Positioned(
                     top: Dimensions.height20 * 4,
                     left: Dimensions.width20,
                     right: Dimensions.width20,
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: Dimensions.width10),
-                      height: Dimensions.height20 * 2.5,
-                      decoration: BoxDecoration(
-                        color: AppColor.mainColor,
-                        borderRadius:
-                            BorderRadius.circular(Dimensions.height20 / 2),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: Dimensions.iconSize17,
-                            color: Colors.amber,
-                          ),
-                          //
-                          Expanded(
-                            child: Text(
-                              // ignore: unnecessary_string_interpolations
-                              "${locationController.pickPlacemark.name ?? ''}",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: Dimensions.fontSize15,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ), //
-                          ),
-                        ],
+                    child: InkWell(
+                      onTap: () {
+                        // showing dialog suggestion on map
+                        Get.dialog(
+                          SearchLocationDialog(mapController: _mapController),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: Dimensions.width10),
+                        height: Dimensions.height20 * 2.5,
+                        decoration: BoxDecoration(
+                          color: AppColor.mainColor,
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.height20 / 2),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: Dimensions.iconSize17,
+                              color: Colors.amber,
+                            ),
+                            //
+                            Expanded(
+                              child: Text(
+                                // ignore: unnecessary_string_interpolations
+                                "${locationController.pickPlacemark.name ?? ''}",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: Dimensions.fontSize15,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ), //
+                            ),
+                            // icon search
+                            const Icon(
+                              Icons.search,
+                              color: Colors.amber,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
