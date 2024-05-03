@@ -180,8 +180,8 @@ class LocationController extends GetxController implements GetxService {
     return _address;
   }
 
-  late Map<String, dynamic> _getAddress;
-  Map<String, dynamic> get getAddress => _getAddress;
+  Map<String, dynamic>? _getAddress;
+  Map<String, dynamic>? get getAddress => _getAddress;
 
   AddressModel getUserAddress() {
     AddressModel? _addressModel;
@@ -189,7 +189,7 @@ class LocationController extends GetxController implements GetxService {
     if (userAddressJson.isNotEmpty) {
       try {
         _getAddress = jsonDecode(userAddressJson);
-        _addressModel = AddressModel.fromJson(_getAddress);
+        _addressModel = AddressModel.fromJson(_getAddress!);
       } catch (e) {
         log(e.toString());
       }

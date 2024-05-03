@@ -56,21 +56,48 @@ class _AddAddressPageState extends State<AddAddressPage> {
       Get.find<LocationController>().getUserAddress();
       final double latitude;
       final double longitude;
+      // ignore: unnecessary_null_comparison
       if (Get.find<LocationController>().position == null) {
         // if null get from local storage
         latitude =
-            Get.find<LocationController>().getAddress['latitude'] is String
+            Get.find<LocationController>().getAddress!['latitude'] is String
                 ? double.parse(
-                    Get.find<LocationController>().getAddress['latitude'],
+                    Get.find<LocationController>().getAddress!['latitude'],
                   )
-                : Get.find<LocationController>().getAddress['latitude'];
+                : Get.find<LocationController>().getAddress!['latitude'];
         longitude =
-            Get.find<LocationController>().getAddress['longitude'] is String
+            Get.find<LocationController>().getAddress!['longitude'] is String
                 ? double.parse(
-                    Get.find<LocationController>().getAddress['longitude'],
+                    Get.find<LocationController>().getAddress!['longitude'],
                   )
-                : Get.find<LocationController>().getAddress['longitude'];
+                : Get.find<LocationController>().getAddress!['longitude'];
       } else {
+        latitude = Get.find<LocationController>().position!.latitude;
+        longitude = Get.find<LocationController>().position!.longitude;
+      }
+      _cameraPosition = CameraPosition(
+        target: LatLng(
+          latitude,
+          longitude,
+        ),
+      );
+
+      _initialPosition = LatLng(
+        latitude,
+        longitude,
+      );
+    } else {
+      // new fix 
+
+      final double latitude;
+      final double longitude;
+      // ignore: unnecessary_null_comparison
+      if (Get.find<LocationController>().position == null) {
+        // if null get from local storage
+        latitude = 21.56453682228907;
+        longitude = 105.8214412871613;
+      } else {
+
         latitude = Get.find<LocationController>().position!.latitude;
         longitude = Get.find<LocationController>().position!.longitude;
       }
@@ -100,8 +127,10 @@ class _AddAddressPageState extends State<AddAddressPage> {
           // check some condition to get info user from usercontroller
           if (userController.getUserModel != null &&
               _contactPersonName.text.isEmpty) {
-            _contactPersonName.text = '${userController.getUserModel?.name}';
-            _contactPersonNumber.text = '${userController.getUserModel?.phone}';
+            // ignore: unnecessary_string_interpolations
+            _contactPersonName.text = '${userController.getUserModel!.name}';
+            // ignore: unnecessary_string_interpolations
+            _contactPersonNumber.text = '${userController.getUserModel!.phone}';
             if (Get.find<LocationController>().addressList.isNotEmpty) {
               // if the list address in locationController already has we pass the address to _addressController
               _addressController.text =

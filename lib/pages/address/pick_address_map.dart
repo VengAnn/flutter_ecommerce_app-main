@@ -41,9 +41,9 @@ class _PickAddressMapState extends State<PickAddressMap> {
     } else {
       if (Get.find<LocationController>().addressList.isNotEmpty) {
         final dynamic latitude =
-            Get.find<LocationController>().getAddress['latitude'];
+            Get.find<LocationController>().getAddress!['latitude'];
         final dynamic longitude =
-            Get.find<LocationController>().getAddress['longitude'];
+            Get.find<LocationController>().getAddress!['longitude'];
         _initialPosition = LatLng(
           latitude is String ? double.parse(latitude) : latitude,
           longitude is String ? double.parse(longitude) : longitude,
